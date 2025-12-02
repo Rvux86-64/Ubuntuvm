@@ -14,7 +14,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential qemu-system-x86 g++
-          nano main.cpp
+          touch main.cpp
+          echo "#include <iostream> \
+          using namespace std; \
+          int main () { cout << \"hello\"; }" << ./main.cpp
           g++ main.cpp -o hello
           ./hello
 
