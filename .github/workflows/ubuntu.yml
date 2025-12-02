@@ -1,0 +1,21 @@
+name: Ubuntu VM
+
+on:
+  workflow_dispatch:   # allows manual run
+
+jobs:
+  run-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Ubuntu version
+        run: lsb_release -a
+
+      - name: Update and install packages
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential qemu-system-x86
+
+      - name: Run commands
+        run: |
+          echo "Ubuntu VM is ready!"
+          uname -a
