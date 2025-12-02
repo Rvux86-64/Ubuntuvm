@@ -17,7 +17,7 @@ jobs:
           touch main.cpp
           echo "#include <iostream> \
           using namespace std; \
-          int main () { cout << \"hello\"; }" << ./main.cpp
+          int main () { cout << \"hello\"; }" >> ./main.cpp
           g++ main.cpp -o hello
           ./hello
 
