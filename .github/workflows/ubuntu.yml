@@ -16,7 +16,7 @@ jobs:
       - name: Install packages
         run: | 
           sudo apt update
-          sudo apt install -y build-essential qemu-system-x86_64 x86_64-elf-g++ ovmf gnu-efi make
+          sudo apt install -y build-essential qemu-system-x86_64 x86_64-elf-g++ x86_64-elf-biunituls ovmf gnu-efi make
       - name: Run make on Makefile
         run: |
           make
