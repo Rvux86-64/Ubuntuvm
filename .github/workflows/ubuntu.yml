@@ -1,27 +1,29 @@
-name: Ubuntu VM
-#https://gist.github.com/tomtzook/9a552c28425deb5bf00123ba2ffb2a4c
+name: Build and Commit Output
+
 on:
-  workflow_dispatch:   # allows manual run
+  push:
+    branches:
+      - main # or your default branch name (e.g., master, develop)
 
 jobs:
-  run-ubuntu:
+  build-and-commit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
     steps:
-      - name: Check Ubuntu version
-        run: lsb_release -a
-
-      - name: Update and install packages
-        run: |
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install packages
+        run: | 
           sudo apt update
-          sudo apt install -y build-essential qemu-system-x86 g++
-          touch main.cpp
-          echo "#include <iostream> \
-          using namespace std; \
-          int main () { cout << \"hello\"; }" >> ./main.cpp
-          g++ main.cpp -o hello
-          ./hello
-
-      - name: Run commands
+          sudo apt install -y build-essential qemu-system-x86_64 x86_64-elf-g++ ovmf
+      - name: Run make on Makefile
         run: |
-          echo "Ubuntu VM is ready!"
-          uname -a
+          make
+          make image
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[Bot] Automated build output commit"
+         
