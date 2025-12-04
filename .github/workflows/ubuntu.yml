@@ -29,6 +29,7 @@ jobs:
         cd gnu-efi-src
         make
         cd ../
+        ls ./
 
     - name: Build UEFI App
       run: |
