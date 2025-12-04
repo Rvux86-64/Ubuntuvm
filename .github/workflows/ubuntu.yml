@@ -30,7 +30,7 @@ jobs:
         make
         cd ./gnuefi/
         make
-        cd ../../
+        cd ../../ 
         find ./gnu-efi-src/ -name "libgnuefi.a"
 
        
@@ -38,6 +38,7 @@ jobs:
     - name: Build UEFI App
       run: |
         make
+        ls ./
 
     - name: Upload BOOTX64.efi artifact
       uses: actions/upload-artifact@v4
