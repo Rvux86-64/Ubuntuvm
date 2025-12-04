@@ -5,56 +5,50 @@ TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
 CC=gcc
 
-# Use GNU-EFI from downloaded source directory
+# Paths to GNU-EFI source
 EFI_SRC=gnu-efi-src/gnuefi
-LD_SRC=gnu-efi-src/x86_64
+EFI_LIB_DIR=gnu-efi-src/x86_64
+EFI_INC_DIR=gnu-efi-src/inc
 
-EFI_INCLUDE_PATH=gnu-efi-src/inc
-EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) \
-             -I$(EFI_INCLUDE_PATH)/$(ARCH) \
-             -I$(EFI_INCLUDE_PATH)/protocol
+# Compiler flags
+EFI_INCLUDES=-I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(ARCH) -I$(EFI_INC_DIR)/protocol
+CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
 
+# Linker flags
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
-
-EFI_LIB_PATH=$(LD_SRC)
-LIB_PATH=$(LD_SRC)
-
-CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
-       -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
-
-LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
-        -Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS)
+LDFLAGS=-nostdlib -T $(EFI_LDS) -shared -Bsymbolic $(EFI_CRT_OBJS) \
+        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR)/libgnuefi.a
 
 all: $(TARGET)
 
-BOOTX64.so: $(OBJS)
-	ld $(LDFLAGS) $(OBJS) -o $@ -lefi -lgnuefi
+# Build the EFI binary
+$(TARGET): $(OBJS)
+	ld $(LDFLAGS) $(OBJS) -o $@
 
+# Compile C files
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c $(CFLAGS) $< -o $@
 
+# Convert .so to .efi (optional)
 %.efi: %.so
 	objcopy -j .text -j .sdata -j .data -j .dynamic \
 	        -j .dynsym -j .rel -j .rela -j .reloc \
 	        --target=efi-app-$(ARCH) $^ $@
 
+# Create EFI image (optional)
 image:
-	## prepare files for efi partition (application binary + startup script)
 	dd if=/dev/zero of=/tmp/part.img bs=512 count=91669
 	mformat -i /tmp/part.img -h 32 -t 32 -n 64 -c 1
-
 	mcopy -i /tmp/part.img ${BINARY_PATH} ::app.efi
 	echo app.efi > startup.nsh
 	mcopy -i /tmp/part.img startup.nsh ::/
-
-	## make full image (with format and efi partition)
 	dd if=/dev/zero of=${DISK_PATH} bs=512 count=93750
 	parted ${DISK_PATH} -s -a minimal mklabel gpt
 	parted ${DISK_PATH} -s -a minimal mkpart EFI FAT16 2048s 93716s
 	parted ${DISK_PATH} -s -a minimal toggle 1 boot
-	## copy files into the image
 	dd if=/tmp/part.img of=${DISK_PATH} bs=512 count=91669 seek=2048 conv=notrunc
 
+# Clean build files
 clean:
 	rm -f *.so *.o *.efi
