@@ -1,0 +1,28 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: configure
+      run: ./configure
+
+    - name: Install dependencies
+      run: |
+          sudo apt install gnu-efi openssl qemu-system-x86_64 ld gcc g++ 
+
+    - name: Comppile code
+      run: make 
+
+    - name: Create Image
+      run: make image
