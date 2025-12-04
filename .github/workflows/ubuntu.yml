@@ -42,9 +42,9 @@ jobs:
         make clean
         ls ./
         file -s HamzaOS.iso
-        sudo mkdir /mnt
-        sudo mount ./HamzaOS.iso /mnt/
-        ls /mnt/
+        sudo mkdir ./mnt
+        sudo mount -o loop ./HamzaOS.iso ./mnt/
+        ls ./mnt/
 
     - name: Upload BOOTX64.efi artifact
       uses: actions/upload-artifact@v4
