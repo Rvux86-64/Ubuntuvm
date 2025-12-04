@@ -5,20 +5,22 @@ TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
 CC=gcc
 
-# Correct Ubuntu include paths
-EFI_INCLUDE_PATH=/usr/include/efi
+# Use GNU-EFI from downloaded source directory
+EFI_SRC=gnu-efi-src/gnuefi
+
+EFI_INCLUDE_PATH=gnu-efi-src/inc
 EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) \
              -I$(EFI_INCLUDE_PATH)/$(ARCH) \
              -I$(EFI_INCLUDE_PATH)/protocol
 
+EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
+EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
+
+EFI_LIB_PATH=$(EFI_SRC)
+LIB_PATH=$(EFI_SRC)
+
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
        -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
-
-# Correct Ubuntu library paths
-LIB_PATH=/usr/lib/x86_64-linux-gnu
-EFI_LIB_PATH=/usr/lib/x86_64-linux-gnu/gnuefi
-EFI_CRT_OBJS=$(EFI_LIB_PATH)/crt0-efi-$(ARCH).o
-EFI_LDS=$(EFI_LIB_PATH)/elf_$(ARCH)_efi.lds
 
 LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
         -Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS)
