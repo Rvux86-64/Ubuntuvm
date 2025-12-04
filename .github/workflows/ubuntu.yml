@@ -28,7 +28,6 @@ jobs:
         tar xf gnu-efi.tar.gz -C gnu-efi-src --strip-components=1
         cd gnu-efi-src
         make
-        ls ./gnu-efi-src/x86_64/
         cd ./gnu-efi-src/gnuefi/
         make
        
