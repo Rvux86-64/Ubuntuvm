@@ -38,6 +38,8 @@ jobs:
     - name: Build UEFI App
       run: |
         make
+        make image
+        make clean
         ls ./
 
     - name: Upload BOOTX64.efi artifact
