@@ -7,7 +7,7 @@ CC=gcc
 
 # Paths to GNU-EFI source
 EFI_SRC=gnu-efi-src/gnuefi
-EFI_LIB_DIR=gnu-efi-src/x86_64
+EFI_LIB_DIR=gnu-efi-src/x86_64/lib
 EFI_INC_DIR=gnu-efi-src/inc
 
 # Compiler flags
