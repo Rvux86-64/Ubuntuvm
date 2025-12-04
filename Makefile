@@ -9,7 +9,7 @@ CC=gcc
 EFI_SRC=gnu-efi-src/gnuefi
 EFI_LIB_DIR=gnu-efi-src/x86_64/lib
 EFI_INC_DIR=gnu-efi-src/inc
-
+EFI_LIB_DIR2=gnu-efi-src/lib
 # Compiler flags
 EFI_INCLUDES=-I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(ARCH) -I$(EFI_INC_DIR)/protocol
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
@@ -18,7 +18,7 @@ CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -W
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
 LDFLAGS=-nostdlib -T $(EFI_LDS) -shared -Bsymbolic $(EFI_CRT_OBJS) \
-        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR)/libgnuefi.a
+        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a
 
 all: $(TARGET)
 
