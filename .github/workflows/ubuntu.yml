@@ -17,6 +17,9 @@ jobs:
         run: | 
           sudo apt update
           sudo apt install -y build-essential gcc ovmf gnu-efi make
+          sudo updatedb
+          locate elf_x86_64_efi.lds
+
       - name: Run make on Makefile
         run: |
           make
