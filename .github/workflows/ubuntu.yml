@@ -29,12 +29,16 @@ jobs:
         cd gnu-efi-src
         make
         cd ../
+        echo "home paths:"
         ls ./
+        echo "gnu-efi-src root paths:"
         ls ./gnu-efi-src/
+        echo "gnu-efi-src gnuefi root paths:"
         ls ./gnu-efi-src/gnuefi/
         cd ./gnu-efi-src/gnuefi/
         make
-        
+        cd ../x86_64
+        make
 
     - name: Build UEFI App
       run: |
