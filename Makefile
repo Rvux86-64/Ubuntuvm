@@ -20,9 +20,11 @@ EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
 LDFLAGS=-nostdlib -T $(EFI_LDS) -shared -Bsymbolic $(EFI_CRT_OBJS) \
         $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a
 
+
+# Default target
 all: $(TARGET)
 
-# Build the EFI binary
+# Build BOOTX64.efi directly from object files
 $(TARGET): $(OBJS)
 	ld $(LDFLAGS) $(OBJS) -o $@
 
@@ -30,17 +32,11 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-# Convert .so to .efi (optional)
-%.efi: %.so
-	objcopy -j .text -j .sdata -j .data -j .dynamic \
-	        -j .dynsym -j .rel -j .rela -j .reloc \
-	        --target=efi-app-$(ARCH) $^ $@
-
-# Create EFI image (optional)
+# Optional: create a FAT image for EFI
 image:
 	dd if=/dev/zero of=/tmp/part.img bs=512 count=91669
 	mformat -i /tmp/part.img -h 32 -t 32 -n 64 -c 1
-	mcopy -i /tmp/part.img ${BINARY_PATH} ::app.efi
+	mcopy -i /tmp/part.img $(TARGET) ::app.efi
 	echo app.efi > startup.nsh
 	mcopy -i /tmp/part.img startup.nsh ::/
 	dd if=/dev/zero of=${DISK_PATH} bs=512 count=93750
@@ -51,4 +47,4 @@ image:
 
 # Clean build files
 clean:
-	rm -f *.so *.o *.efi
+	rm -f *.o *.efi
