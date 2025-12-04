@@ -32,6 +32,9 @@ jobs:
         ls ./
         ls ./gnu-efi-src/
         ls ./gnu-efi-src/gnuefi/
+        cd ./gnu-efi-src/gnuefi/
+        make
+        
 
     - name: Build UEFI App
       run: |
