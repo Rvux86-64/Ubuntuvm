@@ -16,7 +16,7 @@ jobs:
       - name: Install packages
         run: | 
           sudo apt update
-          sudo apt install -y build-essential qemu gcc ld ovmf gnu-efi make
+          sudo apt install -y build-essential gcc ovmf gnu-efi make
       - name: Run make on Makefile
         run: |
           make
