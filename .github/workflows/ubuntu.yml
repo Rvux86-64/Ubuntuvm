@@ -28,8 +28,9 @@ jobs:
         tar xf gnu-efi.tar.gz -C gnu-efi-src --strip-components=1
         cd gnu-efi-src
         make
-        cd ./gnu-efi-src/gnuefi/
+        cd ./gnuefi/
         make
+        cd ../../
        
 
     - name: Build UEFI App
