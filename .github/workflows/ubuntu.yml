@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y build-essential gcc g++ binutils \
-            gnu-efi gnu-efi-amd64 mtools parted wget
+            gnu-efi  mtools parted wget
 
     - name: Download full GNU-EFI sources (GitHub runner lacks .lds + crt0)
       run: |
