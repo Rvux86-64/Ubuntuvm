@@ -7,6 +7,7 @@ CC=gcc
 
 # Use GNU-EFI from downloaded source directory
 EFI_SRC=gnu-efi-src/gnuefi
+LD_SRC=gnu-efi-src/x86_64
 
 EFI_INCLUDE_PATH=gnu-efi-src/inc
 EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) \
@@ -16,8 +17,8 @@ EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) \
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
 
-EFI_LIB_PATH=$(EFI_SRC)
-LIB_PATH=$(EFI_SRC)
+EFI_LIB_PATH=$(LD_SRC)
+LIB_PATH=$(LD_SRC)
 
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
        -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
