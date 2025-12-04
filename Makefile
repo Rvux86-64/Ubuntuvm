@@ -2,7 +2,7 @@ ARCH=x86_64
 
 OBJS=kernel.o
 TARGET=BOOTX64.efi
-
+BINARY_PATH=BOOTX64.efi
 CC=gcc
 
 EFI_INCLUDE_PATH=/usr/local/include/efi
@@ -21,10 +21,10 @@ LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
 
 all: $(TARGET)
 
-main.so: $(OBJS)
+BOOTX64.so: $(OBJS)
 	ld $(LDFLAGS) $(OBJS) -o $@ -lefi -lgnuefi
 
-%.o: %.cpp
+%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 %.efi: %.so
