@@ -3,6 +3,7 @@ ARCH=x86_64
 OBJS=kernel.o
 TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
+DISK_PATH=./HamzaOS.iso
 CC=gcc
 
 # Paths to GNU-EFI source
