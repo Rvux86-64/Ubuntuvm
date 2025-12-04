@@ -45,3 +45,8 @@ jobs:
       with:
         name: BOOTX64-efi
         path: BOOTX64.efi
+    - name: Upload .iso artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HamzaOS.iso
+        path: HamzaOS.iso
