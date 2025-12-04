@@ -31,6 +31,8 @@ jobs:
         cd ./gnuefi/
         make
         cd ../../
+        find ./gnu-efi-src/ -name "libgnuefi.a"
+
        
 
     - name: Build UEFI App
