@@ -48,4 +48,4 @@ image:
 
 # Clean build files
 clean:
-	rm -f *.o *.efi
+	rm -f *.o 
