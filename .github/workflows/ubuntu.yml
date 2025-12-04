@@ -17,8 +17,11 @@ jobs:
         run: | 
           sudo apt update
           sudo apt install -y build-essential gcc ovmf gnu-efi make
-          find /usr -name "elf_x86_64_efi.lds"
-
+      - name: Download full gnu-efi sources (GitHub runner lacks .lds + crt0)
+        run: |
+          wget https://sourceforge.net/projects/gnu-efi/files/latest/download -O gnu-efi.tar.gz
+          mkdir gnu-efi-src
+          tar xf gnu-efi.tar.gz -C gnu-efi-src --strip-components=1
 
       - name: Run make on Makefile
         run: |
