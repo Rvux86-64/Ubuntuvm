@@ -9,7 +9,7 @@ CC=gcc
 EFI_SRC=gnu-efi-src/gnuefi
 EFI_LIB_DIR=gnu-efi-src/x86_64/lib
 EFI_INC_DIR=gnu-efi-src/inc
-EFI_LIB_DIR2=gnu-efi-src/lib
+EFI_LIB_DIR2=gnu-efi-src/x86_64/gnuefi/
 # Compiler flags
 EFI_INCLUDES=-I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(ARCH) -I$(EFI_INC_DIR)/protocol
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
