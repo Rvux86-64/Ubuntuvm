@@ -5,19 +5,23 @@ TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
 CC=gcc
 
-EFI_INCLUDE_PATH=/usr/local/include/efi
-EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) -I$(EFI_INCLUDE_PATH)/$(ARCH) -I$(EFI_INCLUDE_PATH)/protocol
+# Correct Ubuntu include paths
+EFI_INCLUDE_PATH=/usr/include/efi
+EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) \
+             -I$(EFI_INCLUDE_PATH)/$(ARCH) \
+             -I$(EFI_INCLUDE_PATH)/protocol
 
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
-		  -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
+       -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
 
-LIB_PATH=/usr/local/lib
-EFI_LIB_PATH=/usr/local/lib/
+# Correct Ubuntu library paths
+LIB_PATH=/usr/lib/x86_64-linux-gnu
+EFI_LIB_PATH=/usr/lib/x86_64-linux-gnu/gnuefi
 EFI_CRT_OBJS=$(EFI_LIB_PATH)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_LIB_PATH)/elf_$(ARCH)_efi.lds
 
 LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
-	  	-Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS) 
+        -Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS)
 
 all: $(TARGET)
 
@@ -29,9 +33,10 @@ BOOTX64.so: $(OBJS)
 
 %.efi: %.so
 	objcopy -j .text -j .sdata -j .data -j .dynamic \
-			-j .dynsym  -j .rel -j .rela -j .reloc \
-			--target=efi-app-$(ARCH) $^ $@
-image: 
+	        -j .dynsym -j .rel -j .rela -j .reloc \
+	        --target=efi-app-$(ARCH) $^ $@
+
+image:
 	## prepare files for efi partition (application binary + startup script)
 	dd if=/dev/zero of=/tmp/part.img bs=512 count=91669
 	mformat -i /tmp/part.img -h 32 -t 32 -n 64 -c 1
@@ -47,5 +52,6 @@ image:
 	parted ${DISK_PATH} -s -a minimal toggle 1 boot
 	## copy files into the image
 	dd if=/tmp/part.img of=${DISK_PATH} bs=512 count=91669 seek=2048 conv=notrunc
+
 clean:
-	rm *.so *.o *.efi
+	rm -f *.so *.o *.efi
