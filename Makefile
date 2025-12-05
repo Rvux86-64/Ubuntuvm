@@ -5,6 +5,8 @@ TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
 DISK_PATH=./HamzaOS.iso
 CC=gcc
+gcc -c -Ignu-efi-src/inc -Ignu-efi-src/inc/x86_64 -Ignu-efi-src/inc/protocol -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER kernel.c -o kernel.o
+ld -nostdlib -T kernel.o -o BOOTX64.efi
 
 # Paths to GNU-EFI source
 EFI_SRC=gnu-efi-src/gnuefi
@@ -18,9 +20,7 @@ CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -W
 # Linker flags
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
-LDFLAGS=-nostdlib -T $(EFI_LDS)  -Bsymbolic $(EFI_CRT_OBJS) \
-        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a 
-
+LDFLAGS=-gnu-efi-src/gnuefi/elf_x86_64_efi.lds -shared -Bsymbolic gnu-efi-src/gnuefi/crt0-efi-x86_64.o gnu-efi-src/x86_64/lib/libefi.a gnu-efi-src/x86_64/gnuefi//libgnuefi.a
 
 # Default target
 all: $(TARGET)
@@ -28,6 +28,7 @@ all: $(TARGET)
 # Build BOOTX64.efi directly from object files
 $(TARGET): $(OBJS)
 	ld $(LDFLAGS) $(OBJS) -o $@
+
 
 
 # Compile C files
