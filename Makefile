@@ -19,7 +19,7 @@ CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -W
 # Linker flags
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
-LDFLAGS=-gnu-efi-src/gnuefi/elf_x86_64_efi.lds -shared -Bsymbolic gnu-efi-src/gnuefi/crt0-efi-x86_64.o gnu-efi-src/x86_64/lib/libefi.a gnu-efi-src/x86_64/gnuefi//libgnuefi.a
+LDFLAGS=gnu-efi-src/gnuefi/elf_x86_64_efi.lds -shared -Bsymbolic gnu-efi-src/gnuefi/crt0-efi-x86_64.o gnu-efi-src/x86_64/lib/libefi.a gnu-efi-src/x86_64/gnuefi//libgnuefi.a
 
 # Default target
 all: $(TARGET)
