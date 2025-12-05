@@ -1,52 +1,37 @@
+
 ARCH=x86_64
 
 OBJS=kernel.o
-TARGET=BOOTX64.efi
-BINARY_PATH=BOOTX64.efi
-DISK_PATH=./HamzaOS.iso
+TARGET=main.efi
+
 CC=gcc
 
+EFI_INCLUDE_PATH=/usr/local/include/efi
+EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) -I$(EFI_INCLUDE_PATH)/$(ARCH) -I$(EFI_INCLUDE_PATH)/protocol
 
-# Paths to GNU-EFI source
-EFI_SRC=gnu-efi-src/gnuefi
-EFI_LIB_DIR=gnu-efi-src/x86_64/lib
-EFI_INC_DIR=gnu-efi-src/inc
-EFI_LIB_DIR2=gnu-efi-src/x86_64/gnuefi
-# Compiler flags
-EFI_INCLUDES=-I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(ARCH) -I$(EFI_INC_DIR)/protocol
-CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
+CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
+		  -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
 
-# Linker flags
-EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
-EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
-LDFLAGS=gnu-efi-src/gnuefi/elf_x86_64_efi.lds -shared -Bsymbolic gnu-efi-src/gnuefi/crt0-efi-x86_64.o gnu-efi-src/x86_64/lib/libefi.a gnu-efi-src/x86_64/gnuefi//libgnuefi.a
+LIB_PATH=/usr/local/lib
+EFI_LIB_PATH=/usr/local/lib/
+EFI_CRT_OBJS=$(EFI_LIB_PATH)/crt0-efi-$(ARCH).o
+EFI_LDS=$(EFI_LIB_PATH)/elf_$(ARCH)_efi.lds
 
-# Default target
+LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
+	  	-Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS) 
+
 all: $(TARGET)
 
-# Build BOOTX64.efi directly from object files
-$(TARGET): $(OBJS)
-	ld $(LDFLAGS) $(OBJS) -o $@
+main.so: $(OBJS)
+	ld $(LDFLAGS) $(OBJS) -o $@ -lefi -lgnuefi
 
-
-
-# Compile C files
 %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-# Optional: create a FAT image for EFI
-image:
-	mkdir -p iso_root/EFI/BOOT
-	cp BOOTX64.efi iso_root/EFI/BOOT/BOOTX64.EFI
-	xorriso -as mkisofs \
-		-o HamzaOS.iso \
-  		-iso-level 3 \
-		-volid "HAMZAOS" \
-		-eltorito-alt-boot \
-		-e EFI/BOOT/BOOTX64.EFI \
-		-no-emul-boot \
-		-isohybrid-gpt-basdat \
- 		iso_root
+%.efi: %.so
+	objcopy -j .text -j .sdata -j .data -j .dynamic \
+			-j .dynsym  -j .rel -j .rela -j .reloc \
+			--target=efi-app-$(ARCH) $^ $@
 
-
-	
+clean:
+	rm *.so *.o *.efi
