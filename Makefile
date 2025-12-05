@@ -5,8 +5,7 @@ TARGET=BOOTX64.efi
 BINARY_PATH=BOOTX64.efi
 DISK_PATH=./HamzaOS.iso
 CC=gcc
-gcc -c -Ignu-efi-src/inc -Ignu-efi-src/inc/x86_64 -Ignu-efi-src/inc/protocol -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER kernel.c -o kernel.o
-ld -nostdlib -T kernel.o -o BOOTX64.efi
+
 
 # Paths to GNU-EFI source
 EFI_SRC=gnu-efi-src/gnuefi
