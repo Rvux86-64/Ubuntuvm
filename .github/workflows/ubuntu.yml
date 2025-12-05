@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y build-essential gcc g++ binutils \
-            gnu-efi mtools parted wget curl sbsigntool
+            gnu-efi mtools parted wget curl sbsigntool xorriso
 
     - name: Download GNU-EFI full sources
       run: |
