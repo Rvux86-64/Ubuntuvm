@@ -19,7 +19,7 @@ CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -W
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
 LDFLAGS=-nostdlib -T $(EFI_LDS)  -Bsymbolic $(EFI_CRT_OBJS) \
-        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a
+        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a -shared
 
 
 # Default target
