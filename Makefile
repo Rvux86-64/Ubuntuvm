@@ -1,35 +1,48 @@
-
 ARCH=x86_64
 
 OBJS=kernel.o
-TARGET=main.efi
-
+TARGET=BOOTX64.efi
 CC=gcc
-EFI_INCLUDE_PATH=/usr/local/include/efi
-EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) -I$(EFI_INCLUDE_PATH)/$(ARCH) -I$(EFI_INCLUDE_PATH)/protocol
 
-CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
-		  -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
+# Paths to GNU-EFI source
+EFI_SRC=gnu-efi-src/gnuefi
+EFI_LIB_DIR=gnu-efi-src/x86_64
+EFI_INC_DIR=gnu-efi-src/inc
 
-LIB_PATH=gnu-efi-src/gnuefi
-EFI_CRT_OBJS=$(LIB_PATH)/crt0-efi-$(ARCH).o
-EFI_LDS=$(LIB_PATH)/elf_$(ARCH)_efi.lds
+# Compiler flags
+EFI_INCLUDES=-I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(ARCH) -I$(EFI_INC_DIR)/protocol
+CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
 
-LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
-	  	-Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS) 
+# Linker flags
+EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
+EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
+LDFLAGS=-nostdlib -T $(EFI_LDS) -shared -Bsymbolic $(EFI_CRT_OBJS) \
+        $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR)/libgnuefi.a
 
+# Default target
 all: $(TARGET)
 
-main.so: $(OBJS)
-	ld $(LDFLAGS) $(OBJS) -o $@ -lefi -lgnuefi
+# Build BOOTX64.efi directly from object files
+$(TARGET): $(OBJS)
+	ld $(LDFLAGS) $(OBJS) -o $@
 
+# Compile C files
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c $(CFLAGS) $< -o $@
 
-%.efi: %.so
-	objcopy -j .text -j .sdata -j .data -j .dynamic \
-			-j .dynsym  -j .rel -j .rela -j .reloc \
-			--target=efi-app-$(ARCH) $^ $@
+# Optional: create a FAT image for EFI
+image:
+	dd if=/dev/zero of=/tmp/part.img bs=512 count=91669
+	mformat -i /tmp/part.img -h 32 -t 32 -n 64 -c 1
+	mcopy -i /tmp/part.img $(TARGET) ::app.efi
+	echo app.efi > startup.nsh
+	mcopy -i /tmp/part.img startup.nsh ::/
+	dd if=/dev/zero of=${DISK_PATH} bs=512 count=93750
+	parted ${DISK_PATH} -s -a minimal mklabel gpt
+	parted ${DISK_PATH} -s -a minimal mkpart EFI FAT16 2048s 93716s
+	parted ${DISK_PATH} -s -a minimal toggle 1 boot
+	dd if=/tmp/part.img of=${DISK_PATH} bs=512 count=91669 seek=2048 conv=notrunc
 
+# Clean build files
 clean:
-	rm *.so *.o *.efi
+	rm -f *.o *.efi
