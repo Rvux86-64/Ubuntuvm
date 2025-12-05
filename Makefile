@@ -36,24 +36,17 @@ $(TARGET): $(OBJS)
 
 # Optional: create a FAT image for EFI
 image:
-	# Make FAT16 image
-	dd if=/dev/zero of=ESP.img bs=1M count=50
-	sudo mkfs.vfat -F 16 ESP.img
-	sudo mkdir -p mnt
-	sudo sudo mount -o loop ESP.img mnt
-	sudo mkdir -p mnt/EFI/BOOT
-	sudo cp BOOTX64.efi mnt/EFI/BOOT/BOOTX64.efi
-	sudo umount mnt
-
-	# Make ISO
-	sudo xorriso -as mkisofs \
-		-b EFI/BOOT/BOOTX64.EFI \
-  		-no-emul-boot \
-  		-efi-boot-part \
-  		-efi-boot-image \
-  		-o HamzaOS.iso ESP.img
+	mkdir -p iso_root/EFI/BOOT
+	cp BOOTX64.efi iso_root/EFI/BOOT/BOOTX64.EFI
+	xorriso -as mkisofs \
+		-o HamzaOS.iso \
+  		-iso-level 3 \
+		-volid "HAMZAOS" \
+		-eltorito-alt-boot \
+		-e EFI/BOOT/BOOTX64.EFI \
+		-no-emul-boot \
+		-isohybrid-gpt-basdat \
+ 		iso_root
 
 
-# Clean build files
-clean:
-	rm -f *.o 
+	
