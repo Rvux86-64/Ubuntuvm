@@ -28,16 +28,14 @@ jobs:
         tar xf gnu-efi.tar.gz -C gnu-efi-src --strip-components=1
         cd gnu-efi-src && make && cd gnuefi && make
 
-    - name: Restore signing keys from secrets
-      run: |
-        echo "$DB_KEY" | base64 -d > DB.key
-        echo "$DB_CRT" | base64 -d > DB.crt
+  
 
     - name: Build UEFI App
       run: |
-        cp keys/DB.key ./DB.key
-        cp keys/DB.crt ./DB.crt
-        cp keys/DB.cer ./DB.cer
+        git clone https://github.com/Rvux86-64/Ubuntuvm.git
+        cp ./Ubuntuvm/keys/DB.key ./DB.key
+        cp ./Ubuntuvm/keys/DB.crt ./DB.crt
+        cp ./Ubuntuvm/repo/keys/DB.cer ./DB.cer
         make
         make image
         sbsign --key DB.key --cert DB.crt --output BOOTX64_signed.efi BOOTX64.efi
