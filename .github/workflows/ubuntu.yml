@@ -35,7 +35,7 @@ jobs:
         git clone https://github.com/Rvux86-64/Ubuntuvm.git
         cp ./Ubuntuvm/keys/DB.key ./DB.key
         cp ./Ubuntuvm/keys/DB.crt ./DB.crt
-        cp ./Ubuntuvm/repo/keys/DB.cer ./DB.cer
+        cp ./Ubuntuvm/keys/DB.cer ./DB.cer
         make
         make image
         sbsign --key DB.key --cert DB.crt --output BOOTX64_signed.efi BOOTX64.efi
