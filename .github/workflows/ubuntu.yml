@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y build-essential gcc g++ binutils \
-            gnu-efi  mtools parted wget
+            gnu-efi  mtools parted wget curl sbsigntool
 
     - name: Download full GNU-EFI sources (GitHub runner lacks .lds + crt0)
       run: |
@@ -43,8 +43,8 @@ jobs:
         ls ./
         file -s HamzaOS.iso
         sudo mkdir ./mnt
-        sudo mount -o loop ./HamzaOS.iso ./mnt/
-        ls ./mnt/
+        curl https://drive.usercontent.google.com/download?id=17on23K6UUziXz95QbyhJvy8fAAhgbKVB&export=download&authuser=1 && curl "https://drive.google.com/uc?export=download&id=1Cv7tSkV3VKDcuKm9Ijxrxi_VgNXTBUhI"
+        curl https://drive.google.com/uc?export=download&id=16wWMmhqsvSCOhNfJvupe-LjLfIj-7jIT && sbsign --key DB.key --cert DB.crt --output tmp.efi BOOTX64.efi && rm BOOTX64.efi && mv tmp.efi BOOTX64.efi
 
     - name: Upload BOOTX64.efi artifact
       uses: actions/upload-artifact@v4
