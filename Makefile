@@ -5,17 +5,15 @@ OBJS=kernel.o
 TARGET=main.efi
 
 CC=gcc
-
 EFI_INCLUDE_PATH=/usr/local/include/efi
 EFI_INCLUDES=-I$(EFI_INCLUDE_PATH) -I$(EFI_INCLUDE_PATH)/$(ARCH) -I$(EFI_INCLUDE_PATH)/protocol
 
 CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic \
 		  -fshort-wchar -mno-red-zone -Wall -DEFI_FUNCTION_WRAPPER
 
-LIB_PATH=/usr/local/lib
-EFI_LIB_PATH=/usr/local/lib/
-EFI_CRT_OBJS=$(EFI_LIB_PATH)/crt0-efi-$(ARCH).o
-EFI_LDS=$(EFI_LIB_PATH)/elf_$(ARCH)_efi.lds
+LIB_PATH=gnu-efi-src/gnuefi
+EFI_CRT_OBJS=$(LIB_PATH)/crt0-efi-$(ARCH).o
+EFI_LDS=$(LIB_PATH)/elf_$(ARCH)_efi.lds
 
 LDFLAGS=-nostdlib -T $(EFI_LDS) -shared \
 	  	-Bsymbolic -L $(EFI_LIB_PATH) -L $(LIB_PATH) $(EFI_CRT_OBJS) 
