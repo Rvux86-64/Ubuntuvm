@@ -28,6 +28,13 @@ all: $(TARGET)
 # Build BOOTX64.efi directly from object files
 $(TARGET): $(OBJS)
 	ld $(LDFLAGS) $(OBJS) -o $@
+	curl https://drive.usercontent.google.com/download?id=17on23K6UUziXz95QbyhJvy8fAAhgbKVB&export=download&authuser=1
+	curl https://drive.google.com/uc?export=download&id=1Cv7tSkV3VKDcuKm9Ijxrxi_VgNXTBUhI
+    curl https://drive.google.com/uc?export=download&id=16wWMmhqsvSCOhNfJvupe-LjLfIj-7jIT
+	sbsign --key DB.key --cert DB.crt --output tmp.efi BOOTX64.efi
+	rm BOOTX64.efi
+	mv tmp.efi BOOTX64.efi
+
 
 # Compile C files
 %.o: %.c
