@@ -38,15 +38,15 @@ $(TARGET): $(OBJS)
 image:
 	# Make FAT16 image
 	dd if=/dev/zero of=ESP.img bs=1M count=50
-	mkfs.vfat -F 16 ESP.img
-	mkdir -p mnt
-	sudo mount -o loop ESP.img mnt
-	mkdir -p mnt/EFI/BOOT
-	cp BOOTX64.efi mnt/EFI/BOOT/BOOTX64.efi
+	sudo mkfs.vfat -F 16 ESP.img
+	sudo mkdir -p mnt
+	sudo sudo mount -o loop ESP.img mnt
+	sudo mkdir -p mnt/EFI/BOOT
+	sudo cp BOOTX64.efi mnt/EFI/BOOT/BOOTX64.efi
 	sudo umount mnt
 
 	# Make ISO
-	xorriso -as mkisofs \
+	sudo xorriso -as mkisofs \
 		-b EFI/BOOT/BOOTX64.EFI \
   		-no-emul-boot \
   		-efi-boot-part \
