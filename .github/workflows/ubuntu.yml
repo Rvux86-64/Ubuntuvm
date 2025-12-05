@@ -32,6 +32,10 @@ jobs:
 
     - name: Build UEFI App
       run: |
+        find ./gnu-efi-src -name libgnuefi.a
+        find ./gnu-efi.src -name libefi.a
+        find ./gnu-efi-src -name elf_x86_64_efi.lds
+        find ./gnu-efi-src -name crt0_-efi-x86_64.o
         git clone https://github.com/Rvux86-64/Ubuntuvm.git
         cp ./Ubuntuvm/keys/DB.key ./DB.key
         cp ./Ubuntuvm/keys/DB.crt ./DB.crt
