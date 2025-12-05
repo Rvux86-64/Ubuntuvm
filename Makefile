@@ -18,7 +18,7 @@ CFLAGS=$(EFI_INCLUDES) -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -W
 # Linker flags
 EFI_CRT_OBJS=$(EFI_SRC)/crt0-efi-$(ARCH).o
 EFI_LDS=$(EFI_SRC)/elf_$(ARCH)_efi.lds
-LDFLAGS=-nostdlib -T $(EFI_LDS) -shared -Bsymbolic $(EFI_CRT_OBJS) \
+LDFLAGS=-nostdlib -T $(EFI_LDS)  -Bsymbolic $(EFI_CRT_OBJS) \
         $(EFI_LIB_DIR)/libefi.a $(EFI_LIB_DIR2)/libgnuefi.a
 
 
@@ -36,16 +36,23 @@ $(TARGET): $(OBJS)
 
 # Optional: create a FAT image for EFI
 image:
-	dd if=/dev/zero of=/tmp/part.img bs=512 count=91669
-	mformat -i /tmp/part.img -h 32 -t 32 -n 64 -c 1
-	mcopy -i /tmp/part.img $(TARGET) ::app.efi
-	echo app.efi > startup.nsh
-	mcopy -i /tmp/part.img startup.nsh ::/
-	dd if=/dev/zero of=${DISK_PATH} bs=512 count=93750
-	parted ${DISK_PATH} -s -a minimal mklabel gpt
-	parted ${DISK_PATH} -s -a minimal mkpart EFI FAT16 2048s 93716s
-	parted ${DISK_PATH} -s -a minimal toggle 1 boot
-	dd if=/tmp/part.img of=${DISK_PATH} bs=512 count=91669 seek=2048 conv=notrunc
+	# Make FAT16 image
+	dd if=/dev/zero of=ESP.img bs=1M count=50
+	mkfs.vfat -F 16 ESP.img
+	mkdir -p mnt
+	sudo mount -o loop ESP.img mnt
+	mkdir -p mnt/EFI/BOOT
+	cp BOOTX64.efi mnt/EFI/BOOT/BOOTX64.efi
+	sudo umount mnt
+
+	# Make ISO
+	xorriso -as mkisofs \
+		-b EFI/BOOT/BOOTX64.EFI \
+  		-no-emul-boot \
+  		-efi-boot-part \
+  		-efi-boot-image \
+  		-o HamzaOS.iso ESP.img
+
 
 # Clean build files
 clean:
