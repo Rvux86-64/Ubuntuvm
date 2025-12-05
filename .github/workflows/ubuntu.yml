@@ -37,10 +37,12 @@ jobs:
         cp ./Ubuntuvm/keys/DB.crt ./DB.crt
         cp ./Ubuntuvm/keys/DB.cer ./DB.cer
         make
-        make image
         sbsign --key DB.key --cert DB.crt --output BOOTX64_signed.efi BOOTX64.efi
+        rm BOOTX64.efi
         mv BOOTX64_signed.efi BOOTX64.efi
 
+        make image
+        
     - name: Upload BOOTX64.efi
       uses: actions/upload-artifact@v4
       with:
